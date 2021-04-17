@@ -1,0 +1,123 @@
+/*a*/;
+
+SELECT 
+	COUNT(bfBficID) as Numberofpeople, 
+	SUM(bfBficExpNeed) as TotalExpectedneed
+FROM 
+	beneficiaries;
+/*Determine the number of beneficiaries on file and the total of their expected needs*/
+
+/*b*/;
+
+SELECT gGid, bc.bfBficName, b.bfBfacName, gAMT, gDateProm
+FROM 
+	gifts AS g
+    JOIN benefactors AS b
+    	ON g.gBfacID = b.bfBfacID
+    JOIN beneficiaries AS bc
+    	ON g.gBficID = bc.bfBficID
+WHERE gDateRec IS NULL;
+/*Determine which gifts (gift id, name of the beneficiary it has been promised to, name of the
+benefactor who has promised it, the amount promised, and the date promised) have been promised but not received.*/
+
+/*c*/;
+
+SELECT SUM(gAMT)
+FROM gifts
+WHERE gDateRec IS NULL;
+/*Determine the sum of gifts promised but not received.*/
+
+/*d*/;
+
+SELECT bfBfacName
+FROM benefactors
+WHERE bfBfacName LIKE '%White';
+/*Determine whether there is any benefactor whose last name is White.*/
+
+/*e*/;
+
+SELECT bc.bfBficID, bc.bfBficName
+FROM gifts as g
+	JOIN beneficiaries as bc
+    	ON g.gBficID = bc.bfBficID
+WHERE g.gAMT >= 3000 AND g.gDateRec IS NOT NULL;
+/*Determine beneficiaries (by id and name) who have received a total of gifts equal to or greater than $3000.*/
+
+/*f*/;
+
+SELECT bc.bfBficID, bc.bfBficName
+FROM beneficiaries as bc
+	JOIN gifts as g
+    	ON bc.bfBficID = g.gBficID
+WHERE bc.bfBficCategory LIKE '%AH%' AND g.gAMT >= 3000 AND g.gDateRec IS NOT NULL;
+/*Determine beneficiaries (by id and name) in the AH category who have received a total of gifts
+equal to or greater than $3000.*/
+
+/*g*/;
+
+SELECT g.gGID, g.gAMT, g.gBficID as Receivers, g.gBfacID as Givers
+FROM beneficiaries AS bc
+	JOIN gifts AS g
+    	ON bc.bfBficID = g.gBficID
+WHERE bc.bfBficCategory = 'AH' OR 'ED' AND g.gDateRec IS NOT NULL
+ORDER BY g.gAMT ASC;
+/*Determine gifts received in AH or ED categories (gift id, gift amount, ids of givers and receivers),
+sorted by gift amount.*/
+
+/*h*/;
+
+SELECT b.bfBfacID, b.bfBfacName, COUNT(*)
+FROM gifts as g
+	JOIN benefactors as b
+    	ON b.bfBfacID = g.gBfacID
+GROUP BY b.bfBfacID
+HAVING COUNT(*) >1;
+/*Determine the benefactors (by id and name) who have made (and not just promised) more than two
+contributions.*/
+
+/*i*/;
+
+SELECT bc.bfBficID, bc.bfBficName, COUNT(*)
+FROM gifts as g
+	JOIN beneficiaries as bc
+    	ON g.gBficID = bc.bfBficID
+GROUP BY bc.bfBficID
+HAVING COUNT(*) >1;
+/*Determine beneficiaries (id and names) who have received more than 2 gifts.*/
+
+/*j*/;
+
+SELECT bc.bfBficID, bc.bfBficName
+FROM gifts as g
+	JOIN beneficiaries as bc
+    	ON g.gBficID = bc.bfBficID
+WHERE g.gAMT > 5000 AND g.gDateRec IS NOT NULL;
+/*Determine beneficiaries (id and names) who have received more than $5000 in total gifts.*/
+
+/*k*/;
+
+INSERT INTO beneficiaries (
+	bfBficName, bfBficAddress, bfBficPhone, 
+	bfBficExpNeed, bfBficCategory
+) 
+VALUES 
+	(
+		'Jonathan Chen', '12 Nightingale Liverpool', 
+		'312-532-3000', '3000', 'ED'
+	)
+/*Insert myself as a new beneficiary*/
+
+
+/*l*/;
+
+UPDATE beneficiaries
+SET bfBficAddress = '!2 Nightingale Binghamton', bfBficPhone = '607-123-3454'
+WHERE bfBficID = 1001;
+/*Update address and phone number in the beneficiaries table to 12 Nightingale, Binghamton,
+607-123-3454 using beneficiary id*/
+
+/*m*/;
+
+DELETE FROM beneficiaries
+WHERE bfBficID = 1001;
+/*Delete the new beneficiary record*/
